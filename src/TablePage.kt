@@ -3,7 +3,7 @@ import java.util.*
 class TablePage(private val numPagina:Int, var  memory: Memory){
     private var pageFault = 0
     private var listPage = mutableListOf<Page>()
-
+    private var what = 0  // qual algoritimo
     private var fifoBoys = LinkedList<Page>()
 
    fun startTable(){
@@ -23,6 +23,7 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
       //  println("fidePAge")
         listPage.forEach { if (it.pageLogica == pageFisica){ // talvez if pagefisica == pageFisica
             println("HIT")
+            it.pageAge++
             return it.pageFisica
         } }// procura a pagina
 
@@ -68,7 +69,11 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
             findeFrame(bit)
         }else{// se deu page miss procura na memoria
             println("NOT FOund $bite")
-            fifo( findFramePageFault(bite))
+            when (what){
+                1 ->  fifo( findFramePageFault(bite))
+                2 -> lastRUsed(findFramePageFault(bite))
+            }
+
         }
     }
 
@@ -79,6 +84,7 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
      private fun insertTable(data: Int){// insert page
         listPage.forEach { if(it.pageFisica == -1){
             it.pageFisica = data
+            it.pageAge++
             fifoBoys.add(it)
             return
         } }
@@ -126,11 +132,29 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
         } }
     }
 
+    private fun lastRUsed(frame:Frame){
+        var pq = PriorityQueue<Page>(20){a,b -> a.pageAge + b.pageAge}
+
+            listPage.forEach { pq.add(it)  }
+
+        listPage.forEach { if(it == pq.first()){
+            listPage[it.pagePosix].pageAge = 0
+            listPage[it.pagePosix].pageFisica = frame.framePosix
+            listPage[it.pagePosix].pageLogica = frame.frameFisico
+            pq.poll()
+            return
+        }
+        }
+
+
+    }
+
     fun printPageFault(){    println("Page fault $pageFault")      }
 
-    fun findProcess(process: MutableList<String>){
-
-      process.forEach { find(it) }
+    fun findProcess(process: MutableList<String>,algth:Int){
+        what = algth
+        pageFault = 0
+        process.forEach { find(it) }
     }
 
 

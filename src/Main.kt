@@ -24,7 +24,7 @@ fun main() {
         }
     }
 
-    createProcess(0,4)
+    createProcess(0,6)
 
     processo.forEach { println(it) }
 
@@ -40,12 +40,14 @@ fun main() {
 //    table.insertFrame("olar4")
 
     table.insertProcess(processo)
-    table.printTable()
+
     println("===========")
 
     println("00000000000000000000000000000")
-    table.findProcess(processo)
+    table.findProcess(processo,2)
     table.printPageFault()
+    table.findProcess(processo,2)
+   table.printPageFault()
     //  table.printTable()
     //   table.printTable()
 
