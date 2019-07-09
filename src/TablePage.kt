@@ -5,6 +5,7 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
     private var listPage = mutableListOf<Page>()
     private var what = 0  // qual algoritimo
     private var fifoBoys = LinkedList<Page>()
+    private var secondChance = LinkedList<Page>()
 
    fun startTable(){
         var kk = 0
@@ -24,6 +25,7 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
         listPage.forEach { if (it.pageLogica == pageFisica){ // talvez if pagefisica == pageFisica
             println("HIT")
             it.pageAge++
+            it.secondChance = 1
             return it.pageFisica
         } }// procura a pagina
 
@@ -72,6 +74,7 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
             when (what){
                 1 ->  fifo( findFramePageFault(bite))
                 2 -> lastRUsed(findFramePageFault(bite))
+                3 -> secondChance(findFramePageFault(bite))
             }
 
         }
@@ -86,6 +89,7 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
             it.pageFisica = data
             it.pageAge++
             fifoBoys.add(it)
+            secondChance.add(it)
             return
         } }
     }
@@ -127,7 +131,6 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
             //listPage[it.pagePosix].pageLogica = frame.framePosix.toString()
             fifoBoys.poll()
             fifoBoys.add(it)
-            printTable()
             return
         } }
     }
@@ -145,7 +148,24 @@ class TablePage(private val numPagina:Int, var  memory: Memory){
             return
         }
         }
+    }
 
+
+    private fun secondChance(frame:Frame){
+
+        listPage.forEach { if(it.secondChance == 1){
+            it.secondChance = 0
+            secondChance.poll()
+            secondChance.add(it)
+            return
+        }
+            if(it.secondChance == 0){
+                listPage[it.pagePosix].pageAge = 0
+                listPage[it.pagePosix].pageFisica = frame.framePosix
+                listPage[it.pagePosix].pageLogica = frame.frameFisico
+                return
+            }
+        }
 
     }
 

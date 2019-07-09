@@ -47,7 +47,7 @@ fun main() {
     table.findProcess(processo,2)
     table.printPageFault()
     table.findProcess(processo,2)
-   table.printPageFault()
+    table.printPageFault()
     //  table.printTable()
     //   table.printTable()
 
